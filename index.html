@@ -3,9 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIRE LESS</title>
+    <title>Online Medical Store</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    
+
+    <header>
+        <h1>Online Medical Store 🏥</h1>
+        <input type="text" id="search" placeholder="Search for medicine or equipment...">
+        <button onclick="filterProducts()">Search</button>
+    </header>
+
+    <main>
+        <h2>Available Products</h2>
+        <div id="product-list"></div>
+    </main>
+
+    <aside>
+        <h2>🛒 Shopping Cart</h2>
+        <ul id="cart"></ul>
+        <button onclick="checkout()">Checkout</button>
+    </aside>
+
+    <script src="js/index.js"></script>
 </body>
 </html>
