@@ -63,6 +63,7 @@ function updateCart() {
         `;
         cartList.appendChild(li);
     });
+    console.log("Cart Updated:", cart);
 }
 
 function removeFromCart(productId) {
