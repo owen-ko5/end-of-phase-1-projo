@@ -97,3 +97,15 @@ function filterProducts() {
         })
         .catch(error => console.error("Error searching products:", error));
 }
+document.getElementById("contact-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const message = document.getElementById("message").value;
+    
+    alert(`Thank you, ${name}! Your message has been received. We will get back to you via ${email}.`);
+    
+    this.reset(); // Clear the form after submission
+});
+
