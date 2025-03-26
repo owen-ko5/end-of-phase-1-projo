@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 let cart = [];
 
 function fetchProducts() {
-    fetch("http://localhost:3000/products")  // Change URL if hosted elsewhere
+    fetch("http://localhost:3000/products") 
         .then(response => response.json())
         .then(products => {
             displayProducts(products);

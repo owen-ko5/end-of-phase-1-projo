@@ -2,18 +2,20 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
     text-align: center;
+    background-image: url("https://img.freepik.com/free-photo/top-view-medicine-blue-background_23-2149341569.jpg?t=st=1742931064~exp=1742934664~hmac=b6916aa6acc3707fcecad67f829acc664ed4c086393b707be481036ca6f12cb2&w=996");
 }
 
 header {
-    background: #2c3e50;
+    background-color: black;
     color: white;
     padding: 15px;
 }
 
 #search {
     padding: 8px;
-    width: 60%;
+    width: 50%;
     margin-top: 10px;
+    color: black;
 }
 
 #product-list {
@@ -23,7 +25,8 @@ header {
 }
 
 .product-card {
-    border: 1px solid #ddd;
+    border: 1px solid #29be04;
+    box-shadow: 5px 5px 10px 2px purple;
     padding: 15px;
     margin: 10px;
     width: 250px;
@@ -38,7 +41,7 @@ header {
 }
 
 button {
-    background: #3498db;
+    background: rgb(6, 231, 194);
     color: white;
     border: none;
     padding: 10px;
@@ -47,10 +50,6 @@ button {
 }
 
 button:hover {
-    background: #2980b9;
+    background: green;
 }
 
-#cart {
-    list-style: none;
-    padding: 0;
-}
