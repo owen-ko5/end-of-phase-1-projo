@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     fetchProducts();
 });
-
 let cart = [];
-
 function fetchProducts() {
     fetch("http://localhost:3000/products") 
         .then(response => response.json())
@@ -12,7 +10,6 @@ function fetchProducts() {
         })
         .catch(error => console.error("Error fetching products:", error));
 }
-
 function displayProducts(products) {
     const productList = document.getElementById("product-list");
     productList.innerHTML = ""; 
@@ -33,7 +30,6 @@ function displayProducts(products) {
         productList.appendChild(productCard);
     });
 }
-
 function addToCart(productId) {
     fetch(`http://localhost:3000/products/${productId}`)
         .then(response => response.json())
@@ -50,7 +46,6 @@ function addToCart(productId) {
         })
         .catch(error => console.error("Error adding to cart:", error));
 }
-
 function updateCart() {
     const cartList = document.getElementById("cart");
     cartList.innerHTML = "";
@@ -65,48 +60,90 @@ function updateCart() {
     });
     console.log("Cart Updated:", cart);
 }
-
 function removeFromCart(productId) {
     cart = cart.filter(item => item.id !== productId);
     updateCart();
 }
-
 function checkout() {
     if (cart.length === 0) {
         alert("Your cart is empty!");
         return;
     }
-
     let total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     alert(`Total amount: $${total.toFixed(2)}. Your order is placed! 🚚`);
 
     cart = [];
     updateCart();
 }
-
 function filterProducts() {
     const searchQuery = document.getElementById("search").value.toLowerCase();
 
     fetch("http://localhost:3000/products")
         .then(response => response.json())
-        .then(products => {
-            const filteredProducts = products.filter(product =>
-                product.name.toLowerCase().includes(searchQuery) ||
-                product.description.toLowerCase().includes(searchQuery)
-            );
-            displayProducts(filteredProducts);
+        .then(localProducts => {
+            fetch(`https://api.fda.gov/drug/label.json?search=active_ingredient:${searchQuery}+OR+generic_name:${searchQuery}&limit=5`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("No results found from OpenFDA.");
+                    }
+                    return response.json();
+                })
+                .then(apiData => {
+                    if (!apiData.results || apiData.results.length === 0) {
+                        throw new Error("No medicine found.");
+                    }
+
+                    let externalProducts = apiData.results.map(item => ({
+                        id: item.id || Math.random(),
+                        name: item.openfda.brand_name ? item.openfda.brand_name[0] : "Unknown Medicine",
+                        description: item.purpose ? item.purpose[0] : "No description available",
+                        price: (Math.random() * 50).toFixed(2),
+                        stock: Math.floor(Math.random() * 100),
+                        image: "https://via.placeholder.com/100"
+                    }));
+                    let allProducts = [...localProducts, ...externalProducts];
+                    let filteredProducts = allProducts.filter(product =>
+                        product.name.toLowerCase().includes(searchQuery) ||
+                        product.description.toLowerCase().includes(searchQuery)
+                    );
+
+                    if (filteredProducts.length === 0) {
+                        document.getElementById("product-list").innerHTML = "<p>No products found.</p>";
+                    } else {
+                        displayProducts(filteredProducts);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching external data:", error);
+                    document.getElementById("product-list").innerHTML = "<p>No products found.</p>";
+                });
         })
-        .catch(error => console.error("Error searching products:", error));
+        .catch(error => console.error("Error fetching local products:", error));
 }
-document.getElementById("contact-form").addEventListener("submit", function(e) {
+document.getElementById("add-product-form").addEventListener("submit", function(e) {
     e.preventDefault();
-    
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const message = document.getElementById("message").value;
-    
-    alert(`Thank you, ${name}! Your message has been received. We will get back to you via ${email}.`);
-    
-    this.reset(); // Clear the form after submission
+    const newProduct = {
+        name: document.getElementById("product-name").value,
+        image: document.getElementById("product-image").value,
+        description: document.getElementById("product-description").value,
+        price: parseFloat(document.getElementById("product-price").value),
+        stock: parseInt(document.getElementById("product-stock").value),
+        category: document.getElementById("product-category").value
+    };
+    fetch("http://localhost:3000/products", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newProduct)
+    })
+    .then(response => response.json())
+    .then(addedProduct => {
+        console.log("Product added:", addedProduct);
+        alert("Product successfully added!");
+        fetchProducts();
+        document.getElementById("add-product-form").reset();
+    })
+    .catch(error => console.error("Error adding product:", error));
 });
 
